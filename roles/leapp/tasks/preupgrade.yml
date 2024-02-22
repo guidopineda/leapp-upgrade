@@ -1,0 +1,56 @@
+---
+- name: Cleanup previous preupgrade reports
+  file:
+    path: '{{ item }}'
+    state: absent
+  loop:
+    - /var/log/leapp/leapp-report.txt
+    - /var/log/leapp/leapp-report.json
+
+- name: Run the command leapp preupgrade
+  command: leapp preupgrade
+  register: leapp_preupgrade
+  ignore_errors: yes
+
+- name: Debug leapp preupgrade output
+  debug:
+    var: leapp_preupgrade
+    verbosity: 2  
+
+- name: Gather leapp preupgrade report (TXT)
+  fetch:
+    src: /var/log/leapp/leapp-report.txt
+    dest: 'leapp-reports/{{ inventory_hostname }}/var/log/leapp/leapp-report-preupgrade.txt'
+    flat: yes
+
+- name: Gather leapp preupgrade report (JSON)
+  fetch:
+    src: /var/log/leapp/leapp-report.json
+    dest: 'leapp-reports/{{ inventory_hostname }}/var/log/leapp/leapp-report-preupgrade.json'
+    flat: yes
+
+- name: Load leapp preupgrade report
+  include_vars:
+    file: 'leapp-reports/{{ inventory_hostname }}/var/log/leapp/leapp-report-preupgrade.json'
+    name: leapp_preupgrade_report
+
+- name: Print leapp preupgrade report variable
+  debug:
+    var: leapp_preupgrade_report
+    verbosity: 2
+
+- name: Set appropriate facts based on the report
+  set_fact:
+    leapp_preupgrade_report_info: '{{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "info") | list }}'
+    leapp_preupgrade_report_low: '{{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "low") | list }}'
+    leapp_preupgrade_report_high: '{{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "high") | list }}'
+    leapp_preupgrade_report_inhibitors: >
+      {{ leapp_preupgrade_report["entries"] | json_query("[*].flags[?contains(@, 'inhibitor')]") | list }}
+
+- name: Print leapp preupgrade statistics
+  debug:
+    msg: >
+      {{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "info") | list | length }} Info Messages,
+      {{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "low") | list | length }} Low Severity Issues,
+      {{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "high") | list | length }} High Severity Issues,
+      {{ leapp_preupgrade_report["entries"] | json_query("[*].flags[?contains(@, 'inhibitor')]") | list | length }} Inhibitors

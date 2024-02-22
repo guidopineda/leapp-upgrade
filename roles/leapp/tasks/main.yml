@@ -1,0 +1,11 @@
+---
+# tasks file for leapp
+
+- name: Include setup tasks
+  include_tasks: setup.yml
+
+- name: Run the leapp preupgrade tasks
+  include_tasks: preupgrade.yml
+
+- name: Perform the upgrade
+  include_tasks: upgrade.yml

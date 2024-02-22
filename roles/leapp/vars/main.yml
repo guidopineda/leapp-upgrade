@@ -1,0 +1,7 @@
+---
+# vars file for leapp
+src_prefix: "eth"
+dst_prefix: "em"
+osnet_conf: "/etc/os-net-config/config.json"
+src_interfaces: "{{ ansible_interfaces | select('match', src_prefix ~ '.*') | sort | list }}"
+undercloud_conf: "~/undercloud.conf"

@@ -1,0 +1,53 @@
+---
+
+#- name: Install latest kernel
+#  yum:
+#    name: kernel
+#    state: latest
+#  register: kernel_update
+
+#- name: Reboot system to use the newest kernel
+#  reboot:
+#    msg: "Rebooting to use the newest installed kernel"
+#  when: kernel_update is changed or kernel_update is success
+
+- name: Upgrade all packages
+  yum:
+    name: "*"
+    state: latest
+  when: ansible_os_family == "RedHat"
+  notify: reboot_system
+
+- name: Include tasks to rename old naming convention on network interfaces
+  include_tasks: 4067471_predictable-nics_3.yml
+  register: nics_changed
+
+- name: debug
+  debug:
+    var: nics_changed
+
+- name: Reboot system
+  reboot:
+  when: nics_changed is changed
+
+- name: Check if elevate-release is installed
+  command: rpm -q elevate-release
+  register: elevate_release_installed
+  failed_when: elevate_release_installed.rc != 0 and 'package elevate-release is not installed' not in elevate_release_installed.stderr
+  changed_when: false
+  ignore_errors: yes
+
+- name: Install Leapp Repository
+  shell: "yum install -y http://repo.almalinux.org/elevate/elevate-release-latest-el$(rpm --eval %rhel).noarch.rpm"
+  when: elevate_release_installed.rc != 0
+
+- name: Install Leapp Packages
+  yum:
+    name:
+      - leapp-upgrade
+      - leapp-data-almalinux
+    state: latest
+  when: ansible_os_family == "RedHat"    
+
+- name: Answer leapp prompt
+  command: leapp answer --section remove_pam_pkcs11_module_check.confirm=True
