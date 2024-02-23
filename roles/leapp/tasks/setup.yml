@@ -52,5 +52,3 @@
     state: latest
   when: ansible_os_family == "RedHat"    
 
-- name: Answer leapp prompt
-  command: leapp answer --section remove_pam_pkcs11_module_check.confirm=True
