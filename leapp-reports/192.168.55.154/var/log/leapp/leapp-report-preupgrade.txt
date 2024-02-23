@@ -20,12 +20,6 @@ Remediation: [hint] Please file a bug in http://bugzilla.redhat.com/ for leapp-r
 Key: 9a2b05abf8f45fd7915e52542887bb334bb218ea
 ----------------------------------------
 Risk Factor: high
-Title: Difference in Python versions and support in RHEL 8
-Summary: In RHEL 8, there is no 'python' command. Python 3 (backward incompatible) is the primary Python version and Python 2 is available with limited support and limited set of packages. Read more here: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/configuring_basic_system_settings/#using-python3
-Remediation: [hint] Please run "alternatives --set python /usr/bin/python3" after upgrade
-Key: 0c98585b1d8d252eb540bf61560094f3495351f5
-----------------------------------------
-Risk Factor: high
 Title: Packages not signed by Red Hat found on the system
 Summary: The following packages have not been signed by Red Hat and may be removed during the upgrade process in case Red Hat-signed packages to be removed during the upgrade depend on them:
 - elevate-release
@@ -42,6 +36,12 @@ Risk Factor: high
 Title: GRUB core will be updated during upgrade
 Summary: On legacy (BIOS) systems, GRUB core (located in the gap between the MBR and the first partition) does not get automatically updated when GRUB is upgraded.
 Key: baa75fad370c42fd037481909201cde9495dacf4
+----------------------------------------
+Risk Factor: high
+Title: Difference in Python versions and support in RHEL 8
+Summary: In RHEL 8, there is no 'python' command. Python 3 (backward incompatible) is the primary Python version and Python 2 is available with limited support and limited set of packages. Read more here: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/configuring_basic_system_settings/#using-python3
+Remediation: [hint] Please run "alternatives --set python /usr/bin/python3" after upgrade
+Key: 0c98585b1d8d252eb540bf61560094f3495351f5
 ----------------------------------------
 Risk Factor: medium
 Title: SSH configuration automatically modified to permit root login

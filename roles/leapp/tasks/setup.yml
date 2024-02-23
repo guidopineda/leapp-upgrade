@@ -16,19 +16,20 @@
     name: "*"
     state: latest
   when: ansible_os_family == "RedHat"
-  notify: reboot_system
+
+- name: Reboot system after upgrading all packages    
+
+- name: Test network inhibitor
+  shell: "[ $(ip link | egrep '^[0-9]+: eth[0-9]+:' | wc -l) -ge 1 ] && [ $(readlink /sys/class/net/* | grep -v '/virtual/' | wc -l) -ge 2 ] && echo 'In-place upgrade will be inhibited!'"
+  register: nic_inhibitor
 
 - name: Include tasks to rename old naming convention on network interfaces
   include_tasks: 4067471_predictable-nics_3.yml
-  register: nics_changed
+  when: "'In-place upgrade will be inhibited!' in nic_inhibitor.stdout"
 
-- name: debug
-  debug:
-    var: nics_changed
-
-- name: Reboot system
+- name: Reboot system if network interfaces have been updated
   reboot:
-  when: nics_changed is changed
+  when: "'In-place upgrade will be inhibited!' in nic_inhibitor.stdout"
 
 - name: Check if elevate-release is installed
   command: rpm -q elevate-release
