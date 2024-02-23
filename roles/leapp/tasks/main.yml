@@ -7,5 +7,8 @@
 - name: Run the leapp preupgrade tasks
   include_tasks: preupgrade.yml
 
+- name: Run tasks to remediate some inhibitors
+  include_tasks: remediate.yml  
+
 - name: Perform the upgrade
   include_tasks: upgrade.yml
