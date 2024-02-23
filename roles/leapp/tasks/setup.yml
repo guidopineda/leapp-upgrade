@@ -17,7 +17,9 @@
     state: latest
   when: ansible_os_family == "RedHat"
 
-- name: Reboot system after upgrading all packages    
+- name: Reboot system after upgrading all packages
+  reboot:
+    msg: "All packages have been upgraded, System is rebooting"
 
 - name: Test network inhibitor
   shell: "[ $(ip link | egrep '^[0-9]+: eth[0-9]+:' | wc -l) -ge 1 ] && [ $(readlink /sys/class/net/* | grep -v '/virtual/' | wc -l) -ge 2 ] && echo 'In-place upgrade will be inhibited!'"
