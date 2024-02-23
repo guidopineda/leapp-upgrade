@@ -1,0 +1,6 @@
+---
+- name: Answer leapp prompt
+  command: leapp answer --section remove_pam_pkcs11_module_check.confirm=True
+
+- name: Remove problematic modules
+  command: rmmod pata_acpi
