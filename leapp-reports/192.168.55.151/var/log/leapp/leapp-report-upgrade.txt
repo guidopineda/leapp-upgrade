@@ -1,0 +1,101 @@
+Risk Factor: high
+Title: Packages from unknown repositories may not be installed
+Summary: 1 packages may not be installed or upgraded due to repositories unknown to leapp:
+- kernel-uek (repoid: ol8-uek)
+Remediation: [hint] Please file a bug in http://bugzilla.redhat.com/ for leapp-repository component of the Red Hat Enterprise Linux product.
+Key: 9a2b05abf8f45fd7915e52542887bb334bb218ea
+----------------------------------------
+Risk Factor: high
+Title: GRUB core will be updated during upgrade
+Summary: On legacy (BIOS) systems, GRUB core (located in the gap between the MBR and the first partition) does not get automatically updated when GRUB is upgraded.
+Key: baa75fad370c42fd037481909201cde9495dacf4
+----------------------------------------
+Risk Factor: high
+Title: Packages not signed by Red Hat found on the system
+Summary: The following packages have not been signed by Red Hat and may be removed during the upgrade process in case Red Hat-signed packages to be removed during the upgrade depend on them:
+- elevate-release
+- gpg-pubkey
+- leapp
+- leapp-data-almalinux
+- leapp-deps
+- leapp-upgrade-el7toel8
+- leapp-upgrade-el7toel8-deps
+- python2-leapp
+Key: 13f0791ae5f19f50e7d0d606fb6501f91b1efb2c
+----------------------------------------
+Risk Factor: high
+Title: Difference in Python versions and support in RHEL 8
+Summary: In RHEL 8, there is no 'python' command. Python 3 (backward incompatible) is the primary Python version and Python 2 is available with limited support and limited set of packages. Read more here: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/configuring_basic_system_settings/#using-python3
+Remediation: [hint] Please run "alternatives --set python /usr/bin/python3" after upgrade
+Key: 0c98585b1d8d252eb540bf61560094f3495351f5
+----------------------------------------
+Risk Factor: medium
+Title: Module pam_pkcs11 will be removed from PAM configuration
+Summary: Module pam_pkcs11 was surpassed by SSSD and therefore it was removed from RHEL-8. Keeping it in PAM configuration may lock out the system thus it will be automatically removed from PAM configuration before upgrading to RHEL-8. Please switch to SSSD to recover the functionality of pam_pkcs11.
+Remediation: [hint] Configure SSSD to replace pam_pkcs11
+Key: bf47e7305d6805e8bbeaa7593cf01e38030c23f3
+----------------------------------------
+Risk Factor: medium
+Title: chrony using default configuration
+Summary: default chrony configuration in RHEL8 uses leapsectz directive, which cannot be used with leap smearing NTP servers, and uses a single pool directive instead of four server directives
+Key: c4222ebd18730a76f6bc7b3b66df898b106e6554
+----------------------------------------
+Risk Factor: low
+Title: SElinux will be set to permissive mode
+Summary: SElinux will be set to permissive mode. Current mode: enforcing. This action is required by the upgrade process to make sure the upgraded system can boot without beinig blocked by SElinux rules.
+Remediation: [hint] Make sure there are no SElinux related warnings after the upgrade and enable SElinux manually afterwards. Notice: You can ignore the "/root/tmp_leapp_py3" SElinux warnings.
+Key: 39d7183dafba798aa4bbb1e70b0ef2bbe5b1772f
+----------------------------------------
+Risk Factor: low
+Title: Grep has incompatible changes in the next major version
+Summary: If a file contains data improperly encoded for the current locale, and this is discovered before any of the file's contents are output, grep now treats the file as binary.
+The 'grep -P' no longer reports an error and exits when given invalid UTF-8 data. Instead, it considers the data to be non-matching.
+In locales with multibyte character encodings other than UTF-8, grep -P now reports an error and exits instead of misbehaving.
+When searching binary data, grep now may treat non-text bytes as line terminators. This can boost performance significantly.
+The 'grep -z' no longer automatically treats the byte '\200' as binary data.
+Context no longer excludes selected lines omitted because of -m. For example, 'grep "^" -m1 -A1' now outputs the first two input lines, not just the first line.
+
+Remediation: [hint] Please update your scripts to be compatible with the changes.
+Key: 94665a499e2eeee35eca3e7093a7abe183384b16
+----------------------------------------
+Risk Factor: low
+Title: Postfix has incompatible changes in the next major version
+Summary: Postfix 3.x has so called "compatibility safety net" that runs Postfix programs with backwards-compatible default settings. It will log a warning whenever backwards-compatible default setting may be required for continuity of service. Based on this logging the system administrator can decide if any backwards-compatible settings need to be made permanent in main.cf or master.cf, before turning off the backwards-compatibility safety net.
+The backward compatibility safety net is by default turned off in Red Hat Enterprise Linux 8.
+It can be turned on by running:  "postconf -e compatibility_level=0
+It can be turned off by running: "postconf -e compatibility_level=2
+
+In the Postfix MySQL database client, the default "option_group" value has changed to "client", i.e. it now reads options from the [client] group from the MySQL configuration file. To disable it, set "option_group" to the empty string.
+
+The postqueue command no longer forces all message arrival times to be reported in UTC. To get the old behavior, set TZ=UTC in main.cf:import_environment.
+
+Postfix 3.2 enables elliptic curve negotiation. This changes the default smtpd_tls_eecdh_grade setting to "auto", and introduces a new parameter "tls_eecdh_auto_curves" with the names of curves that may be negotiated.
+
+The "master.cf" chroot default value has changed from "y" (yes) to "n" (no). This applies to master.cf services where chroot field is not explicitly specified.
+
+The "append_dot_mydomain" default value has changed from "yes" to "no". You may need changing it to "yes" if senders cannot use complete domain names in e-mail addresses.
+
+The "relay_domains" default value has changed from "$mydestination" to the empty value. This could result in unexpected "Relay access denied" errors or ETRN errors, because now will postfix by default relay only for the localhost.
+
+The "mynetworks_style" default value has changed from "subnet" to "host". This parameter is used to implement the "permit_mynetworks" feature. The change could result in unexpected "access denied" errors, because postfix will now by default trust only the local machine, not the remote SMTP clients on the same IP subnetwork.
+
+Postfix now supports dynamically loaded database plugins. Plugins are shipped in individual RPM sub-packages. Correct database plugins have to be installed, otherwise the specific database client will not work. For example for PostgreSQL map to work, the postfix-pgsql RPM package has to be installed.
+
+Key: 5721e0a07a67d82cf7e5ea6f17662cd4f82e0a33
+----------------------------------------
+Risk Factor: low
+Title: The subscription-manager release is going to be kept as it is during the upgrade
+Summary: The upgrade is executed with the --no-rhsm option (or with the LEAPP_NO_RHSM environment variable). In this case, the subscription-manager will not be configured during the upgrade. If the system is subscribed and release is set already, you could encounter issues to get RHEL content using DNF/YUM after the upgrade.
+Remediation: [hint] Set the new release (or unset it) after the upgrade using subscription-manager: subscription-manager release --set 8.6
+Key: 01986584e27e85ea18929586faf614eee011a121
+----------------------------------------
+Risk Factor: info
+Title: SElinux relabeling will be scheduled
+Summary: SElinux relabeling will be scheduled as the status is permissive/enforcing.
+Key: 8fb81863f8413bd617c2a55b69b8e10ff03d7c72
+----------------------------------------
+Risk Factor: info
+Title: Current PAM and nsswitch.conf configuration will be kept.
+Summary: There is a new tool called authselect in RHEL8 that replaced authconfig. The upgrade process was unable to find an authselect profile that would be equivalent to your current configuration. Therefore your configuration will be left intact.
+Key: 40c4ab1da4a30dc1ca40e543f6385e1336d8810c
+----------------------------------------

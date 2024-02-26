@@ -1,5 +1,5 @@
 {
-  "leapp_run_id": "098f8227-d91e-4819-b269-fb36af3ef969", 
+  "leapp_run_id": "737c198e-bdd7-4c9a-8d55-41af19ee1a8e", 
   "entries": [
     {
       "hostname": "centos7.local", 
@@ -7,7 +7,7 @@
       "tags": [
         "repository"
       ], 
-      "timeStamp": "2024-02-23T10:59:28.211325Z", 
+      "timeStamp": "2024-02-26T09:05:41.993282Z", 
       "title": "Packages from unknown repositories may not be installed", 
       "detail": {
         "related_resources": [
@@ -27,7 +27,46 @@
       "summary": "1 packages may not be installed or upgraded due to repositories unknown to leapp:\n- kernel-uek (repoid: ol8-uek)", 
       "audience": "sysadmin", 
       "key": "9a2b05abf8f45fd7915e52542887bb334bb218ea", 
-      "id": "7d920e427ca162b6f2f3b76d3ae871c8886498d05f303fd59cc2d68757b1101a"
+      "id": "42bae6261a44ed883e74bb81443ed5be9096db283452ce0afada6d2a5f668493"
+    }, 
+    {
+      "hostname": "centos7.local", 
+      "severity": "medium", 
+      "tags": [
+        "authentication", 
+        "security", 
+        "network", 
+        "services"
+      ], 
+      "timeStamp": "2024-02-26T09:05:43.379428Z", 
+      "title": "SSH configuration automatically modified to permit root login", 
+      "detail": {
+        "related_resources": [
+          {
+            "scheme": "package", 
+            "title": "openssh-server"
+          }, 
+          {
+            "scheme": "file", 
+            "title": "/etc/ssh/sshd_config"
+          }, 
+          {
+            "scheme": "file", 
+            "title": "/etc/ssh/sshd_config.leapp_backup"
+          }
+        ], 
+        "remediations": [
+          {
+            "type": "hint", 
+            "context": "If you would prefer to configure the root login policy yourself, consider setting the PermitRootLogin option in sshd_config explicitly."
+          }
+        ]
+      }, 
+      "actor": "openssh_permit_root_login", 
+      "summary": "Your OpenSSH configuration file does not explicitly state the option PermitRootLogin in sshd_config file. Its default is \"yes\" in RHEL7, but will change in RHEL8 to \"prohibit-password\", which may affect your ability to log onto this machine after the upgrade. To prevent this from occuring, the PermitRootLogin option has been explicity set to \"yes\" to preserve the default behaivour after migration. The original configuration file has been backed up to /etc/ssh/sshd_config.leapp_backup", 
+      "audience": "sysadmin", 
+      "key": "226502bd7d858185a700d2876791bed087c75cf5", 
+      "id": "d8bd6133611ac8f231c9cda14fad6f1f1efa32198eb68d698449682a3d6ee6ee"
     }, 
     {
       "hostname": "centos7.local", 
@@ -35,7 +74,7 @@
       "tags": [
         "python"
       ], 
-      "timeStamp": "2024-02-23T10:59:29.513740Z", 
+      "timeStamp": "2024-02-26T09:05:43.451284Z", 
       "title": "Difference in Python versions and support in RHEL 8", 
       "detail": {
         "related_resources": [
@@ -69,7 +108,7 @@
       "summary": "In RHEL 8, there is no 'python' command. Python 3 (backward incompatible) is the primary Python version and Python 2 is available with limited support and limited set of packages. Read more here: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/configuring_basic_system_settings/#using-python3", 
       "audience": "developer", 
       "key": "0c98585b1d8d252eb540bf61560094f3495351f5", 
-      "id": "75f8455bb3c49f463c76cd0c020da5cf0eb89a15ffc9aefad0aa633014cec965"
+      "id": "a91da032a09973ff45dcc3f76322bee5e477c3acb23de48d1e45acaef2ecd48a"
     }, 
     {
       "hostname": "centos7.local", 
@@ -78,7 +117,7 @@
         "services", 
         "email"
       ], 
-      "timeStamp": "2024-02-23T10:59:29.582957Z", 
+      "timeStamp": "2024-02-26T09:05:43.532709Z", 
       "title": "Postfix has incompatible changes in the next major version", 
       "detail": {
         "related_resources": [
@@ -92,7 +131,7 @@
       "summary": "Postfix 3.x has so called \"compatibility safety net\" that runs Postfix programs with backwards-compatible default settings. It will log a warning whenever backwards-compatible default setting may be required for continuity of service. Based on this logging the system administrator can decide if any backwards-compatible settings need to be made permanent in main.cf or master.cf, before turning off the backwards-compatibility safety net.\nThe backward compatibility safety net is by default turned off in Red Hat Enterprise Linux 8.\nIt can be turned on by running:  \"postconf -e compatibility_level=0\nIt can be turned off by running: \"postconf -e compatibility_level=2\n\nIn the Postfix MySQL database client, the default \"option_group\" value has changed to \"client\", i.e. it now reads options from the [client] group from the MySQL configuration file. To disable it, set \"option_group\" to the empty string.\n\nThe postqueue command no longer forces all message arrival times to be reported in UTC. To get the old behavior, set TZ=UTC in main.cf:import_environment.\n\nPostfix 3.2 enables elliptic curve negotiation. This changes the default smtpd_tls_eecdh_grade setting to \"auto\", and introduces a new parameter \"tls_eecdh_auto_curves\" with the names of curves that may be negotiated.\n\nThe \"master.cf\" chroot default value has changed from \"y\" (yes) to \"n\" (no). This applies to master.cf services where chroot field is not explicitly specified.\n\nThe \"append_dot_mydomain\" default value has changed from \"yes\" to \"no\". You may need changing it to \"yes\" if senders cannot use complete domain names in e-mail addresses.\n\nThe \"relay_domains\" default value has changed from \"$mydestination\" to the empty value. This could result in unexpected \"Relay access denied\" errors or ETRN errors, because now will postfix by default relay only for the localhost.\n\nThe \"mynetworks_style\" default value has changed from \"subnet\" to \"host\". This parameter is used to implement the \"permit_mynetworks\" feature. The change could result in unexpected \"access denied\" errors, because postfix will now by default trust only the local machine, not the remote SMTP clients on the same IP subnetwork.\n\nPostfix now supports dynamically loaded database plugins. Plugins are shipped in individual RPM sub-packages. Correct database plugins have to be installed, otherwise the specific database client will not work. For example for PostgreSQL map to work, the postfix-pgsql RPM package has to be installed.\n", 
       "audience": "sysadmin", 
       "key": "5721e0a07a67d82cf7e5ea6f17662cd4f82e0a33", 
-      "id": "6bb5b1ef54554d8a9975d546bdb1f104afb200d13a9a93ba5665caae7630c803"
+      "id": "35c47bf068601777c4131aa7bc5c705e83726ef114d22c7eaceec528764fd085"
     }, 
     {
       "hostname": "centos7.local", 
@@ -100,7 +139,7 @@
       "tags": [
         "tools"
       ], 
-      "timeStamp": "2024-02-23T10:59:30.092239Z", 
+      "timeStamp": "2024-02-26T09:05:44.204589Z", 
       "title": "Grep has incompatible changes in the next major version", 
       "detail": {
         "related_resources": [
@@ -120,46 +159,7 @@
       "summary": "If a file contains data improperly encoded for the current locale, and this is discovered before any of the file's contents are output, grep now treats the file as binary.\nThe 'grep -P' no longer reports an error and exits when given invalid UTF-8 data. Instead, it considers the data to be non-matching.\nIn locales with multibyte character encodings other than UTF-8, grep -P now reports an error and exits instead of misbehaving.\nWhen searching binary data, grep now may treat non-text bytes as line terminators. This can boost performance significantly.\nThe 'grep -z' no longer automatically treats the byte '\\200' as binary data.\nContext no longer excludes selected lines omitted because of -m. For example, 'grep \"^\" -m1 -A1' now outputs the first two input lines, not just the first line.\n", 
       "audience": "sysadmin", 
       "key": "94665a499e2eeee35eca3e7093a7abe183384b16", 
-      "id": "fc2aef6cd460f3fc713ecb7e42181f97cc06ede6562d3f2dd3edc258b1404b92"
-    }, 
-    {
-      "hostname": "centos7.local", 
-      "severity": "medium", 
-      "tags": [
-        "authentication", 
-        "security", 
-        "network", 
-        "services"
-      ], 
-      "timeStamp": "2024-02-23T10:59:31.676423Z", 
-      "title": "SSH configuration automatically modified to permit root login", 
-      "detail": {
-        "related_resources": [
-          {
-            "scheme": "package", 
-            "title": "openssh-server"
-          }, 
-          {
-            "scheme": "file", 
-            "title": "/etc/ssh/sshd_config"
-          }, 
-          {
-            "scheme": "file", 
-            "title": "/etc/ssh/sshd_config.leapp_backup"
-          }
-        ], 
-        "remediations": [
-          {
-            "type": "hint", 
-            "context": "If you would prefer to configure the root login policy yourself, consider setting the PermitRootLogin option in sshd_config explicitly."
-          }
-        ]
-      }, 
-      "actor": "openssh_permit_root_login", 
-      "summary": "Your OpenSSH configuration file does not explicitly state the option PermitRootLogin in sshd_config file. Its default is \"yes\" in RHEL7, but will change in RHEL8 to \"prohibit-password\", which may affect your ability to log onto this machine after the upgrade. To prevent this from occuring, the PermitRootLogin option has been explicity set to \"yes\" to preserve the default behaivour after migration. The original configuration file has been backed up to /etc/ssh/sshd_config.leapp_backup", 
-      "audience": "sysadmin", 
-      "key": "226502bd7d858185a700d2876791bed087c75cf5", 
-      "id": "8730200deb9c51684ea07ebfcabfb2b29b360b005dd87827dd3d7689250606de"
+      "id": "eebec4a0f3bd50fdd0c205e4f066647b2cd586ea966a3f754e66a0e370e4e882"
     }, 
     {
       "hostname": "centos7.local", 
@@ -168,7 +168,7 @@
         "services", 
         "time management"
       ], 
-      "timeStamp": "2024-02-23T10:59:32.413851Z", 
+      "timeStamp": "2024-02-26T09:05:46.488710Z", 
       "title": "chrony using default configuration", 
       "detail": {
         "related_resources": [
@@ -190,13 +190,13 @@
       "summary": "default chrony configuration in RHEL8 uses leapsectz directive, which cannot be used with leap smearing NTP servers, and uses a single pool directive instead of four server directives", 
       "audience": "sysadmin", 
       "key": "c4222ebd18730a76f6bc7b3b66df898b106e6554", 
-      "id": "3b98dad547bad96e01596e559ef2fcf995dc2096409bb7d5a0a1393e194a353e"
+      "id": "17833d3040edd467fcf87582b6b3406af97a7cd515ebcd405c640e5a25e1a4f6"
     }, 
     {
       "hostname": "centos7.local", 
       "severity": "info", 
       "title": "SElinux relabeling will be scheduled", 
-      "timeStamp": "2024-02-23T10:59:32.571922Z", 
+      "timeStamp": "2024-02-26T09:05:46.689283Z", 
       "tags": [
         "selinux", 
         "security"
@@ -205,7 +205,7 @@
       "summary": "SElinux relabeling will be scheduled as the status is permissive/enforcing.", 
       "audience": "sysadmin", 
       "key": "8fb81863f8413bd617c2a55b69b8e10ff03d7c72", 
-      "id": "401d6cf80d401f5e44faf4829ca122fa3c71c6118bba1a89705a9b2e5a12f314"
+      "id": "34b6f79a95306d0cd7475378d1045c76f78dab5ba353302e9e93a5fc3d951fed"
     }, 
     {
       "hostname": "centos7.local", 
@@ -214,7 +214,7 @@
         "selinux", 
         "security"
       ], 
-      "timeStamp": "2024-02-23T10:59:32.578093Z", 
+      "timeStamp": "2024-02-26T09:05:46.693644Z", 
       "title": "SElinux will be set to permissive mode", 
       "detail": {
         "remediations": [
@@ -228,13 +228,13 @@
       "summary": "SElinux will be set to permissive mode. Current mode: enforcing. This action is required by the upgrade process to make sure the upgraded system can boot without beinig blocked by SElinux rules.", 
       "audience": "sysadmin", 
       "key": "39d7183dafba798aa4bbb1e70b0ef2bbe5b1772f", 
-      "id": "782edb63d016cc4af8fd7d940558dd241d9255d2702459062a5274a29541d8fb"
+      "id": "7c0bc2af694ffa28cbeb3c4fa05d2170ddbed548091208eb085dab3faa7229f7"
     }, 
     {
       "hostname": "centos7.local", 
       "severity": "high", 
       "title": "GRUB core will be updated during upgrade", 
-      "timeStamp": "2024-02-23T10:59:32.688127Z", 
+      "timeStamp": "2024-02-26T09:05:46.767432Z", 
       "tags": [
         "boot"
       ], 
@@ -242,7 +242,7 @@
       "summary": "On legacy (BIOS) systems, GRUB core (located in the gap between the MBR and the first partition) does not get automatically updated when GRUB is upgraded.", 
       "audience": "sysadmin", 
       "key": "baa75fad370c42fd037481909201cde9495dacf4", 
-      "id": "5faac1e7e01fb965fbf8cadeac43365ae1877bf3a292b2af023ce366641258be"
+      "id": "6c00b38801757401609c8deafa60801ef3e89b59ae57191427e7ac6da5279ed1"
     }, 
     {
       "hostname": "centos7.local", 
@@ -252,7 +252,7 @@
         "security", 
         "tools"
       ], 
-      "timeStamp": "2024-02-23T10:59:32.731660Z", 
+      "timeStamp": "2024-02-26T09:05:46.885520Z", 
       "title": "Current PAM and nsswitch.conf configuration will be kept.", 
       "detail": {
         "related_resources": [
@@ -274,13 +274,13 @@
       "summary": "There is a new tool called authselect in RHEL8 that replaced authconfig. The upgrade process was unable to find an authselect profile that would be equivalent to your current configuration. Therefore your configuration will be left intact.", 
       "audience": "sysadmin", 
       "key": "40c4ab1da4a30dc1ca40e543f6385e1336d8810c", 
-      "id": "900d42eed6bbc185df1e243a664fe0f07719a02ebbe5d34d187362bf1c2235c8"
+      "id": "668b2fe64228efdb3d3ca00732907185f4a67bebca7d45a2261ab6ccef3323d0"
     }, 
     {
       "hostname": "centos7.local", 
       "severity": "high", 
       "title": "Packages not signed by Red Hat found on the system", 
-      "timeStamp": "2024-02-23T10:59:33.988651Z", 
+      "timeStamp": "2024-02-26T09:05:48.662617Z", 
       "tags": [
         "sanity"
       ], 
@@ -288,7 +288,7 @@
       "summary": "The following packages have not been signed by Red Hat and may be removed during the upgrade process in case Red Hat-signed packages to be removed during the upgrade depend on them:\n- elevate-release\n- gpg-pubkey\n- leapp\n- leapp-data-almalinux\n- leapp-deps\n- leapp-upgrade-el7toel8\n- leapp-upgrade-el7toel8-deps\n- python2-leapp", 
       "audience": "sysadmin", 
       "key": "13f0791ae5f19f50e7d0d606fb6501f91b1efb2c", 
-      "id": "edfa2129400b0ddf740e205216d25ae8ad7d1a187749bdfe73273ee7ed474d03"
+      "id": "d8774eadb2aeed83d773db19cece78c1ca9e73330f6da6c7191cbe4f08619206"
     }, 
     {
       "hostname": "centos7.local", 
@@ -296,7 +296,7 @@
       "tags": [
         "upgrade process"
       ], 
-      "timeStamp": "2024-02-23T11:01:47.835811Z", 
+      "timeStamp": "2024-02-26T09:08:05.868710Z", 
       "title": "The subscription-manager release is going to be kept as it is during the upgrade", 
       "detail": {
         "related_resources": [
@@ -316,12 +316,12 @@
       "summary": "The upgrade is executed with the --no-rhsm option (or with the LEAPP_NO_RHSM environment variable). In this case, the subscription-manager will not be configured during the upgrade. If the system is subscribed and release is set already, you could encounter issues to get RHEL content using DNF/YUM after the upgrade.", 
       "audience": "sysadmin", 
       "key": "01986584e27e85ea18929586faf614eee011a121", 
-      "id": "b340058ca023d11ba79496c3d276b81ff340c0e8b0502fe6fc7f196c1e2d6394"
+      "id": "62a36a3745b3a59d1d0c8ee55450c731cf2c0eab85e3d484cf4af5181ebd5793"
     }, 
     {
       "severity": "high", 
       "title": "Missing required answers in the answer file", 
-      "timeStamp": "2024-02-23T11:01:48.032292Z", 
+      "timeStamp": "2024-02-26T09:08:06.131575Z", 
       "hostname": "centos7.local", 
       "detail": {
         "related_resources": [
@@ -353,7 +353,7 @@
         "inhibitor"
       ], 
       "key": "d35f6c6b1b1fa6924ef442e3670d90fa92f0d54b", 
-      "id": "9d2b29048fd24c466e0437beb13753fc9915d8666fde347415d4425bb8069d45"
+      "id": "d12d0c51155657dbdd08a33c71f8a062e577a2ca89cfa6da87705e108b73b591"
     }
   ]
 }

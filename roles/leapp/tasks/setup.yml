@@ -1,16 +1,5 @@
 ---
 
-#- name: Install latest kernel
-#  yum:
-#    name: kernel
-#    state: latest
-#  register: kernel_update
-
-#- name: Reboot system to use the newest kernel
-#  reboot:
-#    msg: "Rebooting to use the newest installed kernel"
-#  when: kernel_update is changed or kernel_update is success
-
 - name: Upgrade all packages
   yum:
     name: "*"
