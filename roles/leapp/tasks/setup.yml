@@ -38,5 +38,4 @@
       - leapp-upgrade
       - leapp-data-almalinux
     state: latest
-  when: ansible_os_family == "RedHat"    
 
