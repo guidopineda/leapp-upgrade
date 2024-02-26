@@ -1,41 +1,64 @@
 ---
 
+- name: Initialize reboot reason as not required
+  set_fact:
+    reboot_reason: "No reboot required"
+
 - name: Upgrade all packages
   yum:
     name: "*"
     state: latest
-
-- name: Reboot system after upgrading all packages
-  reboot:
-    msg: "All packages have been upgraded, System is rebooting"
+  register: yum_upgrade
 
 - name: Test network inhibitor
-  shell: "[ $(ip link | egrep '^[0-9]+: eth[0-9]+:' | wc -l) -ge 1 ] && [ $(readlink /sys/class/net/* | grep -v '/virtual/' | wc -l) -ge 2 ] && echo 'In-place upgrade will be inhibited!'"
-  register: nic_inhibitor
-
-- name: Include tasks to rename old naming convention on network interfaces
-  include_tasks: 4067471_predictable-nics_3.yml
-  when: "'In-place upgrade will be inhibited!' in nic_inhibitor.stdout"
-
-- name: Reboot system if network interfaces have been updated
-  reboot:
-  when: "'In-place upgrade will be inhibited!' in nic_inhibitor.stdout"
-
-- name: Check if elevate-release is installed
-  command: rpm -q elevate-release
-  register: elevate_release_installed
-  failed_when: elevate_release_installed.rc != 0 and 'package elevate-release is not installed' not in elevate_release_installed.stderr
-  changed_when: false
+  shell: "[ $(ip link | egrep '^[0-9]+: eth[0-9]+:' | wc -l) -ge 1 ] && [ $(readlink /sys/class/net/* | grep -v '/virtual/' | wc -l) -ge 2 ] && echo 'inhibited'"
+  register: nic_inhibtor_condition
   ignore_errors: yes
 
-- name: Install Leapp Repository
-  shell: "yum install -y http://repo.almalinux.org/elevate/elevate-release-latest-el$(rpm --eval %rhel).noarch.rpm"
-  when: elevate_release_installed.rc != 0
+#- name: Include tasks to rename old naming convention on network interfaces
+#  include_tasks: 4067471_predictable-nics_3.yml
+#  when: "'inhibited' in nic_inhibtor_condition.stdout"
 
-- name: Install Leapp Packages
-  yum:
-    name:
-      - leapp-upgrade
-      - leapp-data-almalinux
-    state: latest
+- name: Set reboot reason to package upgrade if yum made changes
+  set_fact:
+    reboot_reason: "Package upgrade required"
+  when: yum_upgrade.changed
 
+- name: Set reboot reason to custom condition if inhibited is found
+  set_fact:
+    reboot_reason: "Custom condition met (inhibited)"
+  when: "'inhibited' in nic_inhibtor_condition.stdout"
+
+- name: debug
+  debug:
+    msg: "{{ reboot_reason }}"
+
+#- name: Reboot system if required
+#  reboot:
+#    msg: "Reboot due to: {{ reboot_reason }}"
+#  when: yum_upgrade.changed or "'inhibited' in nic_inhibtor_condition.stdout"
+
+#  - name: Reboot system when if packages have been updated or nic configuration has changed
+#    reboot
+#    when: >
+#      "'Nothing to do here, all packages are up to date' not in updated_pkgs.results" or
+#      "'In-place upgrade will be inhibited!' in nic_inhibitor.stdout"
+
+#- name: Check if elevate-release is installed
+#  command: rpm -q elevate-release
+#  register: elevate_release_installed
+#  failed_when: elevate_release_installed.rc != 0 and 'package elevate-release is not installed' not in elevate_release_installed.stderr
+#  changed_when: false
+#  ignore_errors: yes
+#
+#- name: Install Leapp Repository
+#  shell: "yum install -y http://repo.almalinux.org/elevate/elevate-release-latest-el$(rpm --eval %rhel).noarch.rpm"
+#  when: elevate_release_installed.rc != 0
+#
+#- name: Install Leapp Packages
+#  yum:
+#    name:
+#      - leapp-upgrade
+#      - leapp-data-almalinux
+#    state: latest
+#
