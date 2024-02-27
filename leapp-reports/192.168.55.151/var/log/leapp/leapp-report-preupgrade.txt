@@ -1,11 +1,3 @@
-Risk Factor: high (inhibitor)
-Title: Missing required answers in the answer file
-Summary: One or more sections in answerfile are missing user choices: remove_pam_pkcs11_module_check.confirm
-For more information consult https://leapp.readthedocs.io/en/latest/dialogs.html
-Remediation: [hint] Please register user choices with leapp answer cli command or by manually editing the answerfile.
-[command] leapp answer --section remove_pam_pkcs11_module_check.confirm=True
-Key: d35f6c6b1b1fa6924ef442e3670d90fa92f0d54b
-----------------------------------------
 Risk Factor: high
 Title: Packages from unknown repositories may not be installed
 Summary: 1 packages may not be installed or upgraded due to repositories unknown to leapp:
@@ -14,15 +6,15 @@ Remediation: [hint] Please file a bug in http://bugzilla.redhat.com/ for leapp-r
 Key: 9a2b05abf8f45fd7915e52542887bb334bb218ea
 ----------------------------------------
 Risk Factor: high
+Title: GRUB core will be updated during upgrade
+Summary: On legacy (BIOS) systems, GRUB core (located in the gap between the MBR and the first partition) does not get automatically updated when GRUB is upgraded.
+Key: baa75fad370c42fd037481909201cde9495dacf4
+----------------------------------------
+Risk Factor: high
 Title: Difference in Python versions and support in RHEL 8
 Summary: In RHEL 8, there is no 'python' command. Python 3 (backward incompatible) is the primary Python version and Python 2 is available with limited support and limited set of packages. Read more here: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/configuring_basic_system_settings/#using-python3
 Remediation: [hint] Please run "alternatives --set python /usr/bin/python3" after upgrade
 Key: 0c98585b1d8d252eb540bf61560094f3495351f5
-----------------------------------------
-Risk Factor: high
-Title: GRUB core will be updated during upgrade
-Summary: On legacy (BIOS) systems, GRUB core (located in the gap between the MBR and the first partition) does not get automatically updated when GRUB is upgraded.
-Key: baa75fad370c42fd037481909201cde9495dacf4
 ----------------------------------------
 Risk Factor: high
 Title: Packages not signed by Red Hat found on the system
@@ -38,15 +30,15 @@ Summary: The following packages have not been signed by Red Hat and may be remov
 Key: 13f0791ae5f19f50e7d0d606fb6501f91b1efb2c
 ----------------------------------------
 Risk Factor: medium
-Title: SSH configuration automatically modified to permit root login
-Summary: Your OpenSSH configuration file does not explicitly state the option PermitRootLogin in sshd_config file. Its default is "yes" in RHEL7, but will change in RHEL8 to "prohibit-password", which may affect your ability to log onto this machine after the upgrade. To prevent this from occuring, the PermitRootLogin option has been explicity set to "yes" to preserve the default behaivour after migration. The original configuration file has been backed up to /etc/ssh/sshd_config.leapp_backup
-Remediation: [hint] If you would prefer to configure the root login policy yourself, consider setting the PermitRootLogin option in sshd_config explicitly.
-Key: 226502bd7d858185a700d2876791bed087c75cf5
-----------------------------------------
-Risk Factor: medium
 Title: chrony using default configuration
 Summary: default chrony configuration in RHEL8 uses leapsectz directive, which cannot be used with leap smearing NTP servers, and uses a single pool directive instead of four server directives
 Key: c4222ebd18730a76f6bc7b3b66df898b106e6554
+----------------------------------------
+Risk Factor: medium
+Title: Module pam_pkcs11 will be removed from PAM configuration
+Summary: Module pam_pkcs11 was surpassed by SSSD and therefore it was removed from RHEL-8. Keeping it in PAM configuration may lock out the system thus it will be automatically removed from PAM configuration before upgrading to RHEL-8. Please switch to SSSD to recover the functionality of pam_pkcs11.
+Remediation: [hint] Configure SSSD to replace pam_pkcs11
+Key: bf47e7305d6805e8bbeaa7593cf01e38030c23f3
 ----------------------------------------
 Risk Factor: low
 Title: Postfix has incompatible changes in the next major version
@@ -74,6 +66,12 @@ Postfix now supports dynamically loaded database plugins. Plugins are shipped in
 Key: 5721e0a07a67d82cf7e5ea6f17662cd4f82e0a33
 ----------------------------------------
 Risk Factor: low
+Title: SElinux will be set to permissive mode
+Summary: SElinux will be set to permissive mode. Current mode: enforcing. This action is required by the upgrade process to make sure the upgraded system can boot without beinig blocked by SElinux rules.
+Remediation: [hint] Make sure there are no SElinux related warnings after the upgrade and enable SElinux manually afterwards. Notice: You can ignore the "/root/tmp_leapp_py3" SElinux warnings.
+Key: 39d7183dafba798aa4bbb1e70b0ef2bbe5b1772f
+----------------------------------------
+Risk Factor: low
 Title: Grep has incompatible changes in the next major version
 Summary: If a file contains data improperly encoded for the current locale, and this is discovered before any of the file's contents are output, grep now treats the file as binary.
 The 'grep -P' no longer reports an error and exits when given invalid UTF-8 data. Instead, it considers the data to be non-matching.
@@ -84,12 +82,6 @@ Context no longer excludes selected lines omitted because of -m. For example, 'g
 
 Remediation: [hint] Please update your scripts to be compatible with the changes.
 Key: 94665a499e2eeee35eca3e7093a7abe183384b16
-----------------------------------------
-Risk Factor: low
-Title: SElinux will be set to permissive mode
-Summary: SElinux will be set to permissive mode. Current mode: enforcing. This action is required by the upgrade process to make sure the upgraded system can boot without beinig blocked by SElinux rules.
-Remediation: [hint] Make sure there are no SElinux related warnings after the upgrade and enable SElinux manually afterwards. Notice: You can ignore the "/root/tmp_leapp_py3" SElinux warnings.
-Key: 39d7183dafba798aa4bbb1e70b0ef2bbe5b1772f
 ----------------------------------------
 Risk Factor: low
 Title: The subscription-manager release is going to be kept as it is during the upgrade

@@ -4,3 +4,6 @@
 
 - name: Remove problematic modules
   command: rmmod pata_acpi
+
+- name: Call preupgrade playbook
+  include_tasks: preupgrade.yml 

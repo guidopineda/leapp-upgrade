@@ -54,3 +54,15 @@
       {{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "low") | list | length }} Low Severity Issues,
       {{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "high") | list | length }} High Severity Issues,
       {{ leapp_preupgrade_report["entries"] | json_query("[*].flags[?contains(@, 'inhibitor')]") | list | length }} Inhibitors
+      
+- name: Print inhibitor
+  debug:
+    msg: "{{ leapp_preupgrade_report[\"entries\"] | json_query(\"[*].flags[?contains(@, 'inhibitor')]\") | list | length }}"
+
+- name: Set fact for inhibitor counter
+  set_fact:
+    inhibitor_counter: "{{ leapp_preupgrade_report[\"entries\"] | json_query(\"[*].flags[?contains(@, 'inhibitor')]\") | list | length }}"
+
+- name: Call remediate playbook
+  include_tasks: remediate.yml 
+  when: inhibitor_counter | int >= 1
