@@ -1,5 +1,5 @@
 ---
 - name: Upgrade OS with Leapp
-  hosts: all
+  hosts: 192.168.55.151
   roles:
     - leapp 

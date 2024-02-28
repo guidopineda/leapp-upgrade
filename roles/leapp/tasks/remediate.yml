@@ -42,6 +42,20 @@
   include_tasks: answer_pkcss11.yml
   when: inhibitor_variable == 'd35f6c6b1b1fa6924ef442e3670d90fa92f0d54b'
 
+- name: Test network inhibitor
+  shell: "[ $(ip link | egrep '^[0-9]+: eth[0-9]+:' | wc -l) -ge 1 ] && [ $(readlink /sys/class/net/* | grep -v '/virtual/' | wc -l) -ge 2 ] && echo 'yes' || echo 'no'"
+  register: nic_inhibitor_check
+  changed_when: false
+  ignore_errors: yes
+
+- name: Set fact for nic inhibitor presence
+  set_fact:
+    nic_inhibitor_presence: "{{ 'yes' in nic_inhibitor_check.stdout }}"
+
+- name: Include tasks to rename old naming convention on network interfaces
+  include_tasks: 4067471_predictable-nics_3.yml
+  when: nic_inhibitor_presence
+    
 #- name: Remove problematic modules
 #  command: rmmod pata_acpi
 #
