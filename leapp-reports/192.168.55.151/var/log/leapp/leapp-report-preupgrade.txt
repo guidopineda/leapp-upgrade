@@ -1,3 +1,11 @@
+Risk Factor: high (inhibitor)
+Title: Missing required answers in the answer file
+Summary: One or more sections in answerfile are missing user choices: remove_pam_pkcs11_module_check.confirm
+For more information consult https://leapp.readthedocs.io/en/latest/dialogs.html
+Remediation: [hint] Please register user choices with leapp answer cli command or by manually editing the answerfile.
+[command] leapp answer --section remove_pam_pkcs11_module_check.confirm=True
+Key: d35f6c6b1b1fa6924ef442e3670d90fa92f0d54b
+----------------------------------------
 Risk Factor: high
 Title: Packages from unknown repositories may not be installed
 Summary: 1 packages may not be installed or upgraded due to repositories unknown to leapp:
@@ -34,11 +42,23 @@ Title: chrony using default configuration
 Summary: default chrony configuration in RHEL8 uses leapsectz directive, which cannot be used with leap smearing NTP servers, and uses a single pool directive instead of four server directives
 Key: c4222ebd18730a76f6bc7b3b66df898b106e6554
 ----------------------------------------
-Risk Factor: medium
-Title: Module pam_pkcs11 will be removed from PAM configuration
-Summary: Module pam_pkcs11 was surpassed by SSSD and therefore it was removed from RHEL-8. Keeping it in PAM configuration may lock out the system thus it will be automatically removed from PAM configuration before upgrading to RHEL-8. Please switch to SSSD to recover the functionality of pam_pkcs11.
-Remediation: [hint] Configure SSSD to replace pam_pkcs11
-Key: bf47e7305d6805e8bbeaa7593cf01e38030c23f3
+Risk Factor: low
+Title: Grep has incompatible changes in the next major version
+Summary: If a file contains data improperly encoded for the current locale, and this is discovered before any of the file's contents are output, grep now treats the file as binary.
+The 'grep -P' no longer reports an error and exits when given invalid UTF-8 data. Instead, it considers the data to be non-matching.
+In locales with multibyte character encodings other than UTF-8, grep -P now reports an error and exits instead of misbehaving.
+When searching binary data, grep now may treat non-text bytes as line terminators. This can boost performance significantly.
+The 'grep -z' no longer automatically treats the byte '\200' as binary data.
+Context no longer excludes selected lines omitted because of -m. For example, 'grep "^" -m1 -A1' now outputs the first two input lines, not just the first line.
+
+Remediation: [hint] Please update your scripts to be compatible with the changes.
+Key: 94665a499e2eeee35eca3e7093a7abe183384b16
+----------------------------------------
+Risk Factor: low
+Title: SElinux will be set to permissive mode
+Summary: SElinux will be set to permissive mode. Current mode: enforcing. This action is required by the upgrade process to make sure the upgraded system can boot without beinig blocked by SElinux rules.
+Remediation: [hint] Make sure there are no SElinux related warnings after the upgrade and enable SElinux manually afterwards. Notice: You can ignore the "/root/tmp_leapp_py3" SElinux warnings.
+Key: 39d7183dafba798aa4bbb1e70b0ef2bbe5b1772f
 ----------------------------------------
 Risk Factor: low
 Title: Postfix has incompatible changes in the next major version
@@ -64,24 +84,6 @@ The "mynetworks_style" default value has changed from "subnet" to "host". This p
 Postfix now supports dynamically loaded database plugins. Plugins are shipped in individual RPM sub-packages. Correct database plugins have to be installed, otherwise the specific database client will not work. For example for PostgreSQL map to work, the postfix-pgsql RPM package has to be installed.
 
 Key: 5721e0a07a67d82cf7e5ea6f17662cd4f82e0a33
-----------------------------------------
-Risk Factor: low
-Title: SElinux will be set to permissive mode
-Summary: SElinux will be set to permissive mode. Current mode: enforcing. This action is required by the upgrade process to make sure the upgraded system can boot without beinig blocked by SElinux rules.
-Remediation: [hint] Make sure there are no SElinux related warnings after the upgrade and enable SElinux manually afterwards. Notice: You can ignore the "/root/tmp_leapp_py3" SElinux warnings.
-Key: 39d7183dafba798aa4bbb1e70b0ef2bbe5b1772f
-----------------------------------------
-Risk Factor: low
-Title: Grep has incompatible changes in the next major version
-Summary: If a file contains data improperly encoded for the current locale, and this is discovered before any of the file's contents are output, grep now treats the file as binary.
-The 'grep -P' no longer reports an error and exits when given invalid UTF-8 data. Instead, it considers the data to be non-matching.
-In locales with multibyte character encodings other than UTF-8, grep -P now reports an error and exits instead of misbehaving.
-When searching binary data, grep now may treat non-text bytes as line terminators. This can boost performance significantly.
-The 'grep -z' no longer automatically treats the byte '\200' as binary data.
-Context no longer excludes selected lines omitted because of -m. For example, 'grep "^" -m1 -A1' now outputs the first two input lines, not just the first line.
-
-Remediation: [hint] Please update your scripts to be compatible with the changes.
-Key: 94665a499e2eeee35eca3e7093a7abe183384b16
 ----------------------------------------
 Risk Factor: low
 Title: The subscription-manager release is going to be kept as it is during the upgrade

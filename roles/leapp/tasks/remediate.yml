@@ -1,9 +1,36 @@
 ---
-- name: Answer leapp prompt
-  command: leapp answer --section remove_pam_pkcs11_module_check.confirm=True
+- name: Load leapp preupgrade report
+  include_vars:
+    file: 'leapp-reports/{{ inventory_hostname }}/var/log/leapp/leapp-report-preupgrade.json'
+    name: leapp_preupgrade_report
 
-- name: Remove problematic modules
-  command: rmmod pata_acpi
+### This is working
 
-- name: Call preupgrade playbook
-  include_tasks: preupgrade.yml 
+#- name: debug
+#  debug:
+#    msg: "{{ item.detail.remediations }}"
+#  loop: "{{ leapp_preupgrade_report.entries }}"
+#  when: item.detail.remediations is defined and item.flags is defined and 'inhibitor' in item.flags
+#
+#- name: Set inhibitor_variable for each remediation context
+#  set_fact:
+#    inhibitor_variable: >-
+#      {{ inhibitor_variable | default([]) + 
+#      [ item.detail.remediations | map(attribute='context') | map('to_json') ] }}
+#  loop: "{{ leapp_preupgrade_report.entries }}"
+#  when: item.detail.remediations is defined and item.flags is defined and 'inhibitor' in item.flags
+#
+#- name: debug
+#  debug:
+#    var: inhibitor_variable
+
+###
+
+#- name: Answer leapp prompt
+#  include_tasks: answer_pkcss11.yml
+#
+#- name: Remove problematic modules
+#  command: rmmod pata_acpi
+#
+#- name: Call preupgrade playbook
+#  include_tasks: preupgrade.yml 
