@@ -26,9 +26,22 @@
 
 ###
 
-#- name: Answer leapp prompt
-#  include_tasks: answer_pkcss11.yml
-#
+- name: Set inhibitor_variable for each inhibitor
+  set_fact:
+    inhibitor_variable: "{{ item.key }}"
+  loop: "{{ leapp_preupgrade_report.entries }}"
+  when: item.detail.remediations is defined and item.flags is defined and 'inhibitor' in item.flags
+
+- name: debug
+  debug:
+    msg: "{{ item.key }}"
+  loop: "{{ leapp_preupgrade_report.entries }}"
+  when: item.detail.remediations is defined and item.flags is defined and 'inhibitor' in item.flags
+
+- name: Answer leapp prompt
+  include_tasks: answer_pkcss11.yml
+  when: inhibitor_variable == 'd35f6c6b1b1fa6924ef442e3670d90fa92f0d54b'
+
 #- name: Remove problematic modules
 #  command: rmmod pata_acpi
 #

@@ -1,21 +1,21 @@
 ---
-#- name: Cleanup previous preupgrade reports
-#  file:
-#    path: '{{ item }}'
-#    state: absent
-#  loop:
-#    - /var/log/leapp/leapp-report.txt
-#    - /var/log/leapp/leapp-report.json
-#
-#- name: Run the command leapp preupgrade
-#  command: leapp preupgrade
-#  register: leapp_preupgrade
-#  ignore_errors: yes
-#
-#- name: Debug leapp preupgrade output
-#  debug:
-#    var: leapp_preupgrade
-#    verbosity: 2  
+- name: Cleanup previous preupgrade reports
+  file:
+    path: '{{ item }}'
+    state: absent
+  loop:
+    - /var/log/leapp/leapp-report.txt
+    - /var/log/leapp/leapp-report.json
+
+- name: Run the command leapp preupgrade
+  command: leapp preupgrade
+  register: leapp_preupgrade
+  ignore_errors: yes
+
+- name: Debug leapp preupgrade output
+  debug:
+    var: leapp_preupgrade
+    verbosity: 2  
 
 - name: Gather leapp preupgrade report (TXT)
   fetch:
