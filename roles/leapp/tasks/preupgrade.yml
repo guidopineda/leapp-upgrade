@@ -6,6 +6,7 @@
   loop:
     - /var/log/leapp/leapp-report.txt
     - /var/log/leapp/leapp-report.json
+  tags: report
 
 - name: Run the command leapp preupgrade
   command: leapp preupgrade
@@ -15,7 +16,8 @@
 - name: Debug leapp preupgrade output
   debug:
     var: leapp_preupgrade
-    verbosity: 2  
+    verbosity: 2
+  tags: report
 
 - name: Gather leapp preupgrade report (TXT)
   fetch:
@@ -33,11 +35,13 @@
   include_vars:
     file: 'leapp-reports/{{ inventory_hostname }}/var/log/leapp/leapp-report-preupgrade.json'
     name: leapp_preupgrade_report
+  tags: report
 
 - name: Print leapp preupgrade report variable
   debug:
     var: leapp_preupgrade_report
     verbosity: 2
+  tags: report    
 
 - name: Set appropriate facts based on the report
   set_fact:
@@ -46,6 +50,7 @@
     leapp_preupgrade_report_high: '{{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "high") | list }}'
     leapp_preupgrade_report_inhibitors: >
       {{ leapp_preupgrade_report["entries"] | json_query("[*].flags[?contains(@, 'inhibitor')]") | list }}
+  tags: report      
 
 - name: Print leapp preupgrade statistics
   debug:
@@ -54,15 +59,23 @@
       {{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "low") | list | length }} Low Severity Issues,
       {{ leapp_preupgrade_report["entries"] | selectattr("severity", "match", "high") | list | length }} High Severity Issues,
       {{ leapp_preupgrade_report["entries"] | json_query("[*].flags[?contains(@, 'inhibitor')]") | list | length }} Inhibitors
-      
-- name: Print inhibitor
-  debug:
-    msg: "{{ leapp_preupgrade_report[\"entries\"] | json_query(\"[*].flags[?contains(@, 'inhibitor')]\") | list | length }}"
+  tags: report      
 
 - name: Set fact for inhibitor counter
   set_fact:
     inhibitor_counter: "{{ leapp_preupgrade_report[\"entries\"] | json_query(\"[*].flags[?contains(@, 'inhibitor')]\") | list | length }}"
+  tags: report
+
+- name: Print inhibitor counter
+  debug:
+    msg: "{{ inhibitor_counter }}"
+  tags: report
 
 - name: Call remediate playbook
   include_tasks: remediate.yml 
   when: inhibitor_counter | int >= 1
+  tags: report
+
+- name: Call upgrade playbook only if there are no more inhibitors
+  include_tasks: upgrade.yml
+  when: inhibitor_counter | int == 0  

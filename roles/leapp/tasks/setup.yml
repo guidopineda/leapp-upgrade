@@ -1,8 +1,8 @@
 ---
 
-- name: Initialize reboot reason as not required
-  set_fact:
-    reboot_reason: "No reboot required"
+#- name: Initialize reboot reason as not required
+#  set_fact:
+#    reboot_reason: "No reboot required"
 
 - name: Upgrade all packages
   yum:
@@ -10,9 +10,9 @@
     state: latest
   register: yum_upgrade
 
-- name: Reboot system if required
-  reboot:
-  when: yum_upgrade.changed
+#- name: Reboot system if required
+#  reboot:
+#  when: yum_upgrade.changed
 
 - name: Gather package facts
   package_facts:

@@ -6,12 +6,6 @@ Remediation: [hint] Please file a bug in http://bugzilla.redhat.com/ for leapp-r
 Key: 9a2b05abf8f45fd7915e52542887bb334bb218ea
 ----------------------------------------
 Risk Factor: high
-Title: Difference in Python versions and support in RHEL 8
-Summary: In RHEL 8, there is no 'python' command. Python 3 (backward incompatible) is the primary Python version and Python 2 is available with limited support and limited set of packages. Read more here: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/configuring_basic_system_settings/#using-python3
-Remediation: [hint] Please run "alternatives --set python /usr/bin/python3" after upgrade
-Key: 0c98585b1d8d252eb540bf61560094f3495351f5
-----------------------------------------
-Risk Factor: high
 Title: Packages not signed by Red Hat found on the system
 Summary: The following packages have not been signed by Red Hat and may be removed during the upgrade process in case Red Hat-signed packages to be removed during the upgrade depend on them:
 - elevate-release
@@ -23,6 +17,12 @@ Summary: The following packages have not been signed by Red Hat and may be remov
 - leapp-upgrade-el7toel8-deps
 - python2-leapp
 Key: 13f0791ae5f19f50e7d0d606fb6501f91b1efb2c
+----------------------------------------
+Risk Factor: high
+Title: Difference in Python versions and support in RHEL 8
+Summary: In RHEL 8, there is no 'python' command. Python 3 (backward incompatible) is the primary Python version and Python 2 is available with limited support and limited set of packages. Read more here: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/configuring_basic_system_settings/#using-python3
+Remediation: [hint] Please run "alternatives --set python /usr/bin/python3" after upgrade
+Key: 0c98585b1d8d252eb540bf61560094f3495351f5
 ----------------------------------------
 Risk Factor: high
 Title: GRUB core will be updated during upgrade
@@ -39,18 +39,6 @@ Title: Module pam_pkcs11 will be removed from PAM configuration
 Summary: Module pam_pkcs11 was surpassed by SSSD and therefore it was removed from RHEL-8. Keeping it in PAM configuration may lock out the system thus it will be automatically removed from PAM configuration before upgrading to RHEL-8. Please switch to SSSD to recover the functionality of pam_pkcs11.
 Remediation: [hint] Configure SSSD to replace pam_pkcs11
 Key: bf47e7305d6805e8bbeaa7593cf01e38030c23f3
-----------------------------------------
-Risk Factor: low
-Title: Grep has incompatible changes in the next major version
-Summary: If a file contains data improperly encoded for the current locale, and this is discovered before any of the file's contents are output, grep now treats the file as binary.
-The 'grep -P' no longer reports an error and exits when given invalid UTF-8 data. Instead, it considers the data to be non-matching.
-In locales with multibyte character encodings other than UTF-8, grep -P now reports an error and exits instead of misbehaving.
-When searching binary data, grep now may treat non-text bytes as line terminators. This can boost performance significantly.
-The 'grep -z' no longer automatically treats the byte '\200' as binary data.
-Context no longer excludes selected lines omitted because of -m. For example, 'grep "^" -m1 -A1' now outputs the first two input lines, not just the first line.
-
-Remediation: [hint] Please update your scripts to be compatible with the changes.
-Key: 94665a499e2eeee35eca3e7093a7abe183384b16
 ----------------------------------------
 Risk Factor: low
 Title: SElinux will be set to permissive mode
@@ -82,6 +70,18 @@ The "mynetworks_style" default value has changed from "subnet" to "host". This p
 Postfix now supports dynamically loaded database plugins. Plugins are shipped in individual RPM sub-packages. Correct database plugins have to be installed, otherwise the specific database client will not work. For example for PostgreSQL map to work, the postfix-pgsql RPM package has to be installed.
 
 Key: 5721e0a07a67d82cf7e5ea6f17662cd4f82e0a33
+----------------------------------------
+Risk Factor: low
+Title: Grep has incompatible changes in the next major version
+Summary: If a file contains data improperly encoded for the current locale, and this is discovered before any of the file's contents are output, grep now treats the file as binary.
+The 'grep -P' no longer reports an error and exits when given invalid UTF-8 data. Instead, it considers the data to be non-matching.
+In locales with multibyte character encodings other than UTF-8, grep -P now reports an error and exits instead of misbehaving.
+When searching binary data, grep now may treat non-text bytes as line terminators. This can boost performance significantly.
+The 'grep -z' no longer automatically treats the byte '\200' as binary data.
+Context no longer excludes selected lines omitted because of -m. For example, 'grep "^" -m1 -A1' now outputs the first two input lines, not just the first line.
+
+Remediation: [hint] Please update your scripts to be compatible with the changes.
+Key: 94665a499e2eeee35eca3e7093a7abe183384b16
 ----------------------------------------
 Risk Factor: low
 Title: The subscription-manager release is going to be kept as it is during the upgrade

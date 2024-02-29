@@ -1,13 +1,13 @@
 {
-  "leapp_run_id": "06f139b4-b154-4657-867d-22f7fa94ed1f", 
+  "leapp_run_id": "fb8729ae-cc8b-4838-b4f5-36b806612316", 
   "entries": [
     {
-      "hostname": "centos7.local", 
+      "hostname": "centos7-4.local", 
       "severity": "high", 
       "tags": [
         "repository"
       ], 
-      "timeStamp": "2024-02-29T15:15:16.243940Z", 
+      "timeStamp": "2024-02-29T15:59:33.936886Z", 
       "title": "Packages from unknown repositories may not be installed", 
       "detail": {
         "related_resources": [
@@ -27,15 +27,90 @@
       "summary": "1 packages may not be installed or upgraded due to repositories unknown to leapp:\n- kernel-uek (repoid: ol8-uek)", 
       "audience": "sysadmin", 
       "key": "9a2b05abf8f45fd7915e52542887bb334bb218ea", 
-      "id": "ae5be705d8e7190387609aad0161853a2e0b3f2386c5fcd55839e9acf894fa32"
+      "id": "d37ed9dec5b00b55481b295fd1468bee0bb2550da818ac44afd43f439fedcc2f"
     }, 
     {
-      "hostname": "centos7.local", 
+      "hostname": "centos7-4.local", 
+      "severity": "info", 
+      "title": "SElinux relabeling will be scheduled", 
+      "timeStamp": "2024-02-29T15:59:36.690898Z", 
+      "tags": [
+        "selinux", 
+        "security"
+      ], 
+      "actor": "check_se_linux", 
+      "summary": "SElinux relabeling will be scheduled as the status is permissive/enforcing.", 
+      "audience": "sysadmin", 
+      "key": "8fb81863f8413bd617c2a55b69b8e10ff03d7c72", 
+      "id": "cb8e467a7758c3f485605134be58f54633ebd7479d6b95d5f6e7002acc253cfd"
+    }, 
+    {
+      "hostname": "centos7-4.local", 
+      "severity": "low", 
+      "tags": [
+        "selinux", 
+        "security"
+      ], 
+      "timeStamp": "2024-02-29T15:59:36.697078Z", 
+      "title": "SElinux will be set to permissive mode", 
+      "detail": {
+        "remediations": [
+          {
+            "type": "hint", 
+            "context": "Make sure there are no SElinux related warnings after the upgrade and enable SElinux manually afterwards. Notice: You can ignore the \"/root/tmp_leapp_py3\" SElinux warnings."
+          }
+        ]
+      }, 
+      "actor": "check_se_linux", 
+      "summary": "SElinux will be set to permissive mode. Current mode: enforcing. This action is required by the upgrade process to make sure the upgraded system can boot without beinig blocked by SElinux rules.", 
+      "audience": "sysadmin", 
+      "key": "39d7183dafba798aa4bbb1e70b0ef2bbe5b1772f", 
+      "id": "b8dde5f7c27c349e9e05b7da3dac2c19b041b9c2fee1ed8cc884d77dc8579fde"
+    }, 
+    {
+      "hostname": "centos7-4.local", 
+      "severity": "high", 
+      "title": "Packages not signed by Red Hat found on the system", 
+      "timeStamp": "2024-02-29T15:59:37.177538Z", 
+      "tags": [
+        "sanity"
+      ], 
+      "actor": "red_hat_signed_rpm_check", 
+      "summary": "The following packages have not been signed by Red Hat and may be removed during the upgrade process in case Red Hat-signed packages to be removed during the upgrade depend on them:\n- elevate-release\n- gpg-pubkey\n- leapp\n- leapp-data-almalinux\n- leapp-deps\n- leapp-upgrade-el7toel8\n- leapp-upgrade-el7toel8-deps\n- python2-leapp", 
+      "audience": "sysadmin", 
+      "key": "13f0791ae5f19f50e7d0d606fb6501f91b1efb2c", 
+      "id": "3b3e4eb0cd5a32c2497bccc106f8c8c70c72ed11f205a18b174387b02dd0bb8d"
+    }, 
+    {
+      "hostname": "centos7-4.local", 
+      "severity": "low", 
+      "tags": [
+        "services", 
+        "email"
+      ], 
+      "timeStamp": "2024-02-29T15:59:37.875102Z", 
+      "title": "Postfix has incompatible changes in the next major version", 
+      "detail": {
+        "related_resources": [
+          {
+            "scheme": "package", 
+            "title": "postfix"
+          }
+        ]
+      }, 
+      "actor": "check_postfix", 
+      "summary": "Postfix 3.x has so called \"compatibility safety net\" that runs Postfix programs with backwards-compatible default settings. It will log a warning whenever backwards-compatible default setting may be required for continuity of service. Based on this logging the system administrator can decide if any backwards-compatible settings need to be made permanent in main.cf or master.cf, before turning off the backwards-compatibility safety net.\nThe backward compatibility safety net is by default turned off in Red Hat Enterprise Linux 8.\nIt can be turned on by running:  \"postconf -e compatibility_level=0\nIt can be turned off by running: \"postconf -e compatibility_level=2\n\nIn the Postfix MySQL database client, the default \"option_group\" value has changed to \"client\", i.e. it now reads options from the [client] group from the MySQL configuration file. To disable it, set \"option_group\" to the empty string.\n\nThe postqueue command no longer forces all message arrival times to be reported in UTC. To get the old behavior, set TZ=UTC in main.cf:import_environment.\n\nPostfix 3.2 enables elliptic curve negotiation. This changes the default smtpd_tls_eecdh_grade setting to \"auto\", and introduces a new parameter \"tls_eecdh_auto_curves\" with the names of curves that may be negotiated.\n\nThe \"master.cf\" chroot default value has changed from \"y\" (yes) to \"n\" (no). This applies to master.cf services where chroot field is not explicitly specified.\n\nThe \"append_dot_mydomain\" default value has changed from \"yes\" to \"no\". You may need changing it to \"yes\" if senders cannot use complete domain names in e-mail addresses.\n\nThe \"relay_domains\" default value has changed from \"$mydestination\" to the empty value. This could result in unexpected \"Relay access denied\" errors or ETRN errors, because now will postfix by default relay only for the localhost.\n\nThe \"mynetworks_style\" default value has changed from \"subnet\" to \"host\". This parameter is used to implement the \"permit_mynetworks\" feature. The change could result in unexpected \"access denied\" errors, because postfix will now by default trust only the local machine, not the remote SMTP clients on the same IP subnetwork.\n\nPostfix now supports dynamically loaded database plugins. Plugins are shipped in individual RPM sub-packages. Correct database plugins have to be installed, otherwise the specific database client will not work. For example for PostgreSQL map to work, the postfix-pgsql RPM package has to be installed.\n", 
+      "audience": "sysadmin", 
+      "key": "5721e0a07a67d82cf7e5ea6f17662cd4f82e0a33", 
+      "id": "8f14bec9b4ad0d7fd814ffbae742c5daa38b89a77e59cce6f53e9456ebdf2d6c"
+    }, 
+    {
+      "hostname": "centos7-4.local", 
       "severity": "low", 
       "tags": [
         "tools"
       ], 
-      "timeStamp": "2024-02-29T15:15:18.200261Z", 
+      "timeStamp": "2024-02-29T15:59:38.089059Z", 
       "title": "Grep has incompatible changes in the next major version", 
       "detail": {
         "related_resources": [
@@ -55,15 +130,46 @@
       "summary": "If a file contains data improperly encoded for the current locale, and this is discovered before any of the file's contents are output, grep now treats the file as binary.\nThe 'grep -P' no longer reports an error and exits when given invalid UTF-8 data. Instead, it considers the data to be non-matching.\nIn locales with multibyte character encodings other than UTF-8, grep -P now reports an error and exits instead of misbehaving.\nWhen searching binary data, grep now may treat non-text bytes as line terminators. This can boost performance significantly.\nThe 'grep -z' no longer automatically treats the byte '\\200' as binary data.\nContext no longer excludes selected lines omitted because of -m. For example, 'grep \"^\" -m1 -A1' now outputs the first two input lines, not just the first line.\n", 
       "audience": "sysadmin", 
       "key": "94665a499e2eeee35eca3e7093a7abe183384b16", 
-      "id": "c11ace2366c0f7e64deb809479d3fb87220f79b2eda5feab521b0cb422f01043"
+      "id": "14eb8de783a52c388383ab5b52606b6c670722965f83febce339efead6542533"
     }, 
     {
-      "hostname": "centos7.local", 
+      "hostname": "centos7-4.local", 
+      "severity": "medium", 
+      "tags": [
+        "services", 
+        "time management"
+      ], 
+      "timeStamp": "2024-02-29T15:59:38.488210Z", 
+      "title": "chrony using default configuration", 
+      "detail": {
+        "related_resources": [
+          {
+            "scheme": "package", 
+            "title": "ntpd"
+          }, 
+          {
+            "scheme": "package", 
+            "title": "chrony"
+          }, 
+          {
+            "scheme": "file", 
+            "title": "/etc/chrony.conf"
+          }
+        ]
+      }, 
+      "actor": "check_chrony", 
+      "summary": "default chrony configuration in RHEL8 uses leapsectz directive, which cannot be used with leap smearing NTP servers, and uses a single pool directive instead of four server directives", 
+      "audience": "sysadmin", 
+      "key": "c4222ebd18730a76f6bc7b3b66df898b106e6554", 
+      "id": "9ff9d6f89b04cbfd5172fa5f0ee0d074f53fc0c4fe8844e7cd199ced67748ecf"
+    }, 
+    {
+      "hostname": "centos7-4.local", 
       "severity": "high", 
       "tags": [
         "python"
       ], 
-      "timeStamp": "2024-02-29T15:15:19.734476Z", 
+      "timeStamp": "2024-02-29T15:59:39.826053Z", 
       "title": "Difference in Python versions and support in RHEL 8", 
       "detail": {
         "related_resources": [
@@ -97,88 +203,43 @@
       "summary": "In RHEL 8, there is no 'python' command. Python 3 (backward incompatible) is the primary Python version and Python 2 is available with limited support and limited set of packages. Read more here: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/configuring_basic_system_settings/#using-python3", 
       "audience": "developer", 
       "key": "0c98585b1d8d252eb540bf61560094f3495351f5", 
-      "id": "abf2f5c94b56afffcc481cf09e5d4ccf1e8e6226c7d9c06ae33813e1fbe2ba93"
+      "id": "42bd07f75936c4856fecfb0a65f8b558b4d1a3e11f20c257c4f12eba3a52c1e5"
     }, 
     {
-      "hostname": "centos7.local", 
-      "severity": "high", 
-      "title": "Packages not signed by Red Hat found on the system", 
-      "timeStamp": "2024-02-29T15:15:20.308063Z", 
+      "hostname": "centos7-4.local", 
+      "severity": "medium", 
       "tags": [
-        "sanity"
+        "authentication", 
+        "security", 
+        "tools"
       ], 
-      "actor": "red_hat_signed_rpm_check", 
-      "summary": "The following packages have not been signed by Red Hat and may be removed during the upgrade process in case Red Hat-signed packages to be removed during the upgrade depend on them:\n- elevate-release\n- gpg-pubkey\n- leapp\n- leapp-data-almalinux\n- leapp-deps\n- leapp-upgrade-el7toel8\n- leapp-upgrade-el7toel8-deps\n- python2-leapp", 
-      "audience": "sysadmin", 
-      "key": "13f0791ae5f19f50e7d0d606fb6501f91b1efb2c", 
-      "id": "eaa688c2782d7df605b20217948f80b520e6663003bfea6648b3cf5bbb695672"
-    }, 
-    {
-      "hostname": "centos7.local", 
-      "severity": "info", 
-      "title": "SElinux relabeling will be scheduled", 
-      "timeStamp": "2024-02-29T15:15:20.598852Z", 
-      "tags": [
-        "selinux", 
-        "security"
-      ], 
-      "actor": "check_se_linux", 
-      "summary": "SElinux relabeling will be scheduled as the status is permissive/enforcing.", 
-      "audience": "sysadmin", 
-      "key": "8fb81863f8413bd617c2a55b69b8e10ff03d7c72", 
-      "id": "b3c02216b283a2c864d769f27676acf14f18d1eb4a438fa3deead741af4dc981"
-    }, 
-    {
-      "hostname": "centos7.local", 
-      "severity": "low", 
-      "tags": [
-        "selinux", 
-        "security"
-      ], 
-      "timeStamp": "2024-02-29T15:15:20.608507Z", 
-      "title": "SElinux will be set to permissive mode", 
-      "detail": {
-        "remediations": [
-          {
-            "type": "hint", 
-            "context": "Make sure there are no SElinux related warnings after the upgrade and enable SElinux manually afterwards. Notice: You can ignore the \"/root/tmp_leapp_py3\" SElinux warnings."
-          }
-        ]
-      }, 
-      "actor": "check_se_linux", 
-      "summary": "SElinux will be set to permissive mode. Current mode: enforcing. This action is required by the upgrade process to make sure the upgraded system can boot without beinig blocked by SElinux rules.", 
-      "audience": "sysadmin", 
-      "key": "39d7183dafba798aa4bbb1e70b0ef2bbe5b1772f", 
-      "id": "078735f689a10208062bdc9b2481e69d26c0766c1bb595cbc102f458f0e48ab5"
-    }, 
-    {
-      "hostname": "centos7.local", 
-      "severity": "low", 
-      "tags": [
-        "services", 
-        "email"
-      ], 
-      "timeStamp": "2024-02-29T15:15:20.840842Z", 
-      "title": "Postfix has incompatible changes in the next major version", 
+      "timeStamp": "2024-02-29T15:59:41.648235Z", 
+      "title": "Module pam_pkcs11 will be removed from PAM configuration", 
       "detail": {
         "related_resources": [
           {
             "scheme": "package", 
-            "title": "postfix"
+            "title": "sssd"
+          }
+        ], 
+        "remediations": [
+          {
+            "type": "hint", 
+            "context": "Configure SSSD to replace pam_pkcs11"
           }
         ]
       }, 
-      "actor": "check_postfix", 
-      "summary": "Postfix 3.x has so called \"compatibility safety net\" that runs Postfix programs with backwards-compatible default settings. It will log a warning whenever backwards-compatible default setting may be required for continuity of service. Based on this logging the system administrator can decide if any backwards-compatible settings need to be made permanent in main.cf or master.cf, before turning off the backwards-compatibility safety net.\nThe backward compatibility safety net is by default turned off in Red Hat Enterprise Linux 8.\nIt can be turned on by running:  \"postconf -e compatibility_level=0\nIt can be turned off by running: \"postconf -e compatibility_level=2\n\nIn the Postfix MySQL database client, the default \"option_group\" value has changed to \"client\", i.e. it now reads options from the [client] group from the MySQL configuration file. To disable it, set \"option_group\" to the empty string.\n\nThe postqueue command no longer forces all message arrival times to be reported in UTC. To get the old behavior, set TZ=UTC in main.cf:import_environment.\n\nPostfix 3.2 enables elliptic curve negotiation. This changes the default smtpd_tls_eecdh_grade setting to \"auto\", and introduces a new parameter \"tls_eecdh_auto_curves\" with the names of curves that may be negotiated.\n\nThe \"master.cf\" chroot default value has changed from \"y\" (yes) to \"n\" (no). This applies to master.cf services where chroot field is not explicitly specified.\n\nThe \"append_dot_mydomain\" default value has changed from \"yes\" to \"no\". You may need changing it to \"yes\" if senders cannot use complete domain names in e-mail addresses.\n\nThe \"relay_domains\" default value has changed from \"$mydestination\" to the empty value. This could result in unexpected \"Relay access denied\" errors or ETRN errors, because now will postfix by default relay only for the localhost.\n\nThe \"mynetworks_style\" default value has changed from \"subnet\" to \"host\". This parameter is used to implement the \"permit_mynetworks\" feature. The change could result in unexpected \"access denied\" errors, because postfix will now by default trust only the local machine, not the remote SMTP clients on the same IP subnetwork.\n\nPostfix now supports dynamically loaded database plugins. Plugins are shipped in individual RPM sub-packages. Correct database plugins have to be installed, otherwise the specific database client will not work. For example for PostgreSQL map to work, the postfix-pgsql RPM package has to be installed.\n", 
+      "actor": "removed_pam_modules_check", 
+      "summary": "Module pam_pkcs11 was surpassed by SSSD and therefore it was removed from RHEL-8. Keeping it in PAM configuration may lock out the system thus it will be automatically removed from PAM configuration before upgrading to RHEL-8. Please switch to SSSD to recover the functionality of pam_pkcs11.", 
       "audience": "sysadmin", 
-      "key": "5721e0a07a67d82cf7e5ea6f17662cd4f82e0a33", 
-      "id": "1afb53964be6fa639fd2caf587e2bc84a0395c29c665f6193433f4e33835f1fd"
+      "key": "bf47e7305d6805e8bbeaa7593cf01e38030c23f3", 
+      "id": "431ab783390f9d687c88124e48331f83e7fb733eed43c252b4d96fe12734882d"
     }, 
     {
-      "hostname": "centos7.local", 
+      "hostname": "centos7-4.local", 
       "severity": "high", 
       "title": "GRUB core will be updated during upgrade", 
-      "timeStamp": "2024-02-29T15:15:20.892387Z", 
+      "timeStamp": "2024-02-29T15:59:42.306323Z", 
       "tags": [
         "boot"
       ], 
@@ -186,48 +247,17 @@
       "summary": "On legacy (BIOS) systems, GRUB core (located in the gap between the MBR and the first partition) does not get automatically updated when GRUB is upgraded.", 
       "audience": "sysadmin", 
       "key": "baa75fad370c42fd037481909201cde9495dacf4", 
-      "id": "988decab884b8b388acd24adacd43bb1b20d4138edf19a24c99b22559f11aad4"
+      "id": "2ebd195f8364e79fa8b94bb60a1877d22494571a4c31a0a32ea682215f7b67f0"
     }, 
     {
-      "hostname": "centos7.local", 
-      "severity": "medium", 
-      "tags": [
-        "services", 
-        "time management"
-      ], 
-      "timeStamp": "2024-02-29T15:15:21.149642Z", 
-      "title": "chrony using default configuration", 
-      "detail": {
-        "related_resources": [
-          {
-            "scheme": "package", 
-            "title": "ntpd"
-          }, 
-          {
-            "scheme": "package", 
-            "title": "chrony"
-          }, 
-          {
-            "scheme": "file", 
-            "title": "/etc/chrony.conf"
-          }
-        ]
-      }, 
-      "actor": "check_chrony", 
-      "summary": "default chrony configuration in RHEL8 uses leapsectz directive, which cannot be used with leap smearing NTP servers, and uses a single pool directive instead of four server directives", 
-      "audience": "sysadmin", 
-      "key": "c4222ebd18730a76f6bc7b3b66df898b106e6554", 
-      "id": "b60e286bfd71dd35543c49b4c242bd500eec2303d054816e809dfbb7017e4f56"
-    }, 
-    {
-      "hostname": "centos7.local", 
+      "hostname": "centos7-4.local", 
       "severity": "info", 
       "tags": [
         "authentication", 
         "security", 
         "tools"
       ], 
-      "timeStamp": "2024-02-29T15:15:21.975048Z", 
+      "timeStamp": "2024-02-29T15:59:43.719613Z", 
       "title": "Current PAM and nsswitch.conf configuration will be kept.", 
       "detail": {
         "related_resources": [
@@ -249,45 +279,15 @@
       "summary": "There is a new tool called authselect in RHEL8 that replaced authconfig. The upgrade process was unable to find an authselect profile that would be equivalent to your current configuration. Therefore your configuration will be left intact.", 
       "audience": "sysadmin", 
       "key": "40c4ab1da4a30dc1ca40e543f6385e1336d8810c", 
-      "id": "3954e035a86dc3c4e05473be4eea164f1c566f4e6b391ae015021f6befd89c08"
+      "id": "c64850d49f10416f7bf25b1601137d6a224eed8f32e2a11a41fb06830f2e5616"
     }, 
     {
-      "hostname": "centos7.local", 
-      "severity": "medium", 
-      "tags": [
-        "authentication", 
-        "security", 
-        "tools"
-      ], 
-      "timeStamp": "2024-02-29T15:15:22.023861Z", 
-      "title": "Module pam_pkcs11 will be removed from PAM configuration", 
-      "detail": {
-        "related_resources": [
-          {
-            "scheme": "package", 
-            "title": "sssd"
-          }
-        ], 
-        "remediations": [
-          {
-            "type": "hint", 
-            "context": "Configure SSSD to replace pam_pkcs11"
-          }
-        ]
-      }, 
-      "actor": "removed_pam_modules_check", 
-      "summary": "Module pam_pkcs11 was surpassed by SSSD and therefore it was removed from RHEL-8. Keeping it in PAM configuration may lock out the system thus it will be automatically removed from PAM configuration before upgrading to RHEL-8. Please switch to SSSD to recover the functionality of pam_pkcs11.", 
-      "audience": "sysadmin", 
-      "key": "bf47e7305d6805e8bbeaa7593cf01e38030c23f3", 
-      "id": "10c9b65bffb6e5993d7e0defcc990e700522c02626e6344f75ae395fdb7236ff"
-    }, 
-    {
-      "hostname": "centos7.local", 
+      "hostname": "centos7-4.local", 
       "severity": "low", 
       "tags": [
         "upgrade process"
       ], 
-      "timeStamp": "2024-02-29T15:17:21.687083Z", 
+      "timeStamp": "2024-02-29T16:02:56.493026Z", 
       "title": "The subscription-manager release is going to be kept as it is during the upgrade", 
       "detail": {
         "related_resources": [
@@ -307,7 +307,7 @@
       "summary": "The upgrade is executed with the --no-rhsm option (or with the LEAPP_NO_RHSM environment variable). In this case, the subscription-manager will not be configured during the upgrade. If the system is subscribed and release is set already, you could encounter issues to get RHEL content using DNF/YUM after the upgrade.", 
       "audience": "sysadmin", 
       "key": "01986584e27e85ea18929586faf614eee011a121", 
-      "id": "dddefc8f9f3678821fe38f52f29696a39cdbb20903892a3dec9c3e66f303158f"
+      "id": "70d8ad6433db4e67330c7f8d7416076ba4c0fe69bc927787bd5a922732e148be"
     }
   ]
 }

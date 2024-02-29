@@ -58,7 +58,12 @@
       {{ leapp_upgrade_report["entries"] | selectattr("severity", "match", "high") | list | length }} High Severity Issues
 
 - name: Reboot system
-  debug:
-    msg: "Rebooting system"
-  notify: reboot_system
+  reboot:
+    reboot_timeout: 3600
   when: not leapp_upgrade.failed
+
+#- name: Reboot system
+#  debug:
+#    msg: "Rebooting system"
+#  notify: reboot_system
+#  when: not leapp_upgrade.failed

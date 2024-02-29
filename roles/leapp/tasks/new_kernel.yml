@@ -1,0 +1,4 @@
+---
+- name: Rebooting system to make sure the newest kernel is installed
+  reboot:
+

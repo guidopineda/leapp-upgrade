@@ -1,14 +1,14 @@
 ---
-# tasks file for leapp
 
-- name: Include setup tasks
-  include_tasks: setup.yml
+- name: Perform a LEAPP Upgrade from CentOS 7 to Alma Linux 8
+  block:
 
-- name: Run the leapp preupgrade tasks
-  include_tasks: preupgrade.yml
+    - name: Include setup tasks
+      include_tasks: setup.yml
+      tags: report
 
-#- name: Run tasks to remediate some inhibitors
-#  include_tasks: remediate.yml  
+    - name: Run the leapp preupgrade tasks
+      include_tasks: preupgrade.yml
+      tags: report
 
-#- name: Perform the upgrade
-#  include_tasks: upgrade.yml
+  when: ansible_distribution_major_version == '7'

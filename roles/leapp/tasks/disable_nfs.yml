@@ -1,0 +1,8 @@
+---
+- name: Check for NFS mount in /etc/fstab
+  lineinfile:
+    path: /etc/fstab
+    regexp: '^(?!#)(.*nfs.*)$'
+    line: '#\1'
+    backrefs: yes
+

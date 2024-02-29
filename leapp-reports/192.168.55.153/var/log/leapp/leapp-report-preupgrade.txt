@@ -12,6 +12,11 @@ Remediation: [hint] Please run "alternatives --set python /usr/bin/python3" afte
 Key: 0c98585b1d8d252eb540bf61560094f3495351f5
 ----------------------------------------
 Risk Factor: high
+Title: GRUB core will be updated during upgrade
+Summary: On legacy (BIOS) systems, GRUB core (located in the gap between the MBR and the first partition) does not get automatically updated when GRUB is upgraded.
+Key: baa75fad370c42fd037481909201cde9495dacf4
+----------------------------------------
+Risk Factor: high
 Title: Packages not signed by Red Hat found on the system
 Summary: The following packages have not been signed by Red Hat and may be removed during the upgrade process in case Red Hat-signed packages to be removed during the upgrade depend on them:
 - elevate-release
@@ -24,21 +29,16 @@ Summary: The following packages have not been signed by Red Hat and may be remov
 - python2-leapp
 Key: 13f0791ae5f19f50e7d0d606fb6501f91b1efb2c
 ----------------------------------------
-Risk Factor: high
-Title: GRUB core will be updated during upgrade
-Summary: On legacy (BIOS) systems, GRUB core (located in the gap between the MBR and the first partition) does not get automatically updated when GRUB is upgraded.
-Key: baa75fad370c42fd037481909201cde9495dacf4
-----------------------------------------
-Risk Factor: medium
-Title: chrony using default configuration
-Summary: default chrony configuration in RHEL8 uses leapsectz directive, which cannot be used with leap smearing NTP servers, and uses a single pool directive instead of four server directives
-Key: c4222ebd18730a76f6bc7b3b66df898b106e6554
-----------------------------------------
 Risk Factor: medium
 Title: Module pam_pkcs11 will be removed from PAM configuration
 Summary: Module pam_pkcs11 was surpassed by SSSD and therefore it was removed from RHEL-8. Keeping it in PAM configuration may lock out the system thus it will be automatically removed from PAM configuration before upgrading to RHEL-8. Please switch to SSSD to recover the functionality of pam_pkcs11.
 Remediation: [hint] Configure SSSD to replace pam_pkcs11
 Key: bf47e7305d6805e8bbeaa7593cf01e38030c23f3
+----------------------------------------
+Risk Factor: medium
+Title: chrony using default configuration
+Summary: default chrony configuration in RHEL8 uses leapsectz directive, which cannot be used with leap smearing NTP servers, and uses a single pool directive instead of four server directives
+Key: c4222ebd18730a76f6bc7b3b66df898b106e6554
 ----------------------------------------
 Risk Factor: low
 Title: Grep has incompatible changes in the next major version

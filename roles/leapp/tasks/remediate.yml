@@ -3,6 +3,7 @@
   include_vars:
     file: 'leapp-reports/{{ inventory_hostname }}/var/log/leapp/leapp-report-preupgrade.json'
     name: leapp_preupgrade_report
+  tags: report
 
 ### This is working
 
@@ -26,38 +27,86 @@
 
 ###
 
-- name: Set inhibitor_variable for each inhibitor
-  set_fact:
-    inhibitor_variable: "{{ item.key }}"
-  loop: "{{ leapp_preupgrade_report.entries }}"
-  when: item.detail.remediations is defined and item.flags is defined and 'inhibitor' in item.flags
+- name: Initialize inhibitor_variable as an empty list
+  set_fact: 
+    inhibitor_variable: []
+  tags: report
 
-- name: debug
+#- name: Set inhibitor_variable for each inhibitor
+#  set_fact:
+#    inhibitor_variable: "{{ item.key }}"
+#  loop: "{{ leapp_preupgrade_report.entries }}"
+#  when: item.detail.remediations is defined and item.flags is defined and 'inhibitor' in item.flags
+#  tags: report
+
+- name: Collect keys for inhibitors
+  set_fact:
+    inhibitor_variable: "{{ inhibitor_variable + [item.key] }}"
+  loop: "{{ leapp_preupgrade_report.entries }}"
+  when:
+    - item.detail.remediations is defined
+    - item.flags is defined
+    - "'inhibitor' in item.flags"
+  tags: report
+
+- name: Print inhibitor variable
   debug:
-    msg: "{{ item.key }}"
-  loop: "{{ leapp_preupgrade_report.entries }}"
-  when: item.detail.remediations is defined and item.flags is defined and 'inhibitor' in item.flags
+    msg: "{{ inhibitor_variable }}"
+  tags: report
 
-- name: Answer leapp prompt
+#- name: debug
+#  debug:
+#    msg: "{{ item.key }}"
+#  loop: "{{ leapp_preupgrade_report.entries }}"
+#  when: item.detail.remediations is defined and item.flags is defined and 'inhibitor' in item.flags
+#  tags: report
+
+#- name: test answer leapp prompt
+#  debug:
+#    msg: "Answer leapp prompt in list"
+#  when: "'d35f6c6b1b1fa6924ef442e3670d90fa92f0d54b' not in inhibitor_variable"
+#  tags: report
+
+- name: Remediation task - Answer leapp prompt (pkcss11)
   include_tasks: answer_pkcss11.yml
-  when: inhibitor_variable == 'd35f6c6b1b1fa6924ef442e3670d90fa92f0d54b'
+  when: "'d35f6c6b1b1fa6924ef442e3670d90fa92f0d54b' in inhibitor_variable"
 
-- name: Test network inhibitor
-  shell: "[ $(ip link | egrep '^[0-9]+: eth[0-9]+:' | wc -l) -ge 1 ] && [ $(readlink /sys/class/net/* | grep -v '/virtual/' | wc -l) -ge 2 ] && echo 'yes' || echo 'no'"
-  register: nic_inhibitor_check
-  changed_when: false
-  ignore_errors: yes
-
-- name: Set fact for nic inhibitor presence
-  set_fact:
-    nic_inhibitor_presence: "{{ 'yes' in nic_inhibitor_check.stdout }}"
-
-- name: Include tasks to rename old naming convention on network interfaces
+- name: Remediation task - Rename old naming convention on network interfaces
   include_tasks: 4067471_predictable-nics_3.yml
-  when: nic_inhibitor_presence
+  when: "'d3050d265759a79ce895e64f45e9c56e49b3a953' in inhibitor_variable"
+
+- name: Remediation task - Reboot system after applying changes to nic configuration
+  reboot:
+  when: "'d3050d265759a79ce895e64f45e9c56e49b3a953' in inhibitor_variable"
+
+- name: Remediation task - Newest installed kernel not in use remediation
+  include_tasks: new_kernel.yml
+  when: "'ebb478cfa5443f83a8c9a78ba510eb40e6e9d117' in inhibitor_variable"
+
+- name: Remediation task - Disable NFS mount
+  include_tasks: disable_nfs.yml
+  when: "'9881b25faceeeaa7a6478bcdac29afd7f6baaaed' in inhibitor_variable"
+
+#- name: Test network inhibitor
+#  shell: "[ $(ip link | egrep '^[0-9]+: eth[0-9]+:' | wc -l) -ge 1 ] && [ $(readlink /sys/class/net/* | grep -v '/virtual/' | wc -l) -ge 2 ] && echo 'yes' || echo 'no'"
+#  register: nic_inhibitor_check
+#  changed_when: false
+#  ignore_errors: yes
+#
+#- name: Set fact for nic inhibitor presence
+#  set_fact:
+#    nic_inhibitor_presence: "{{ 'yes' in nic_inhibitor_check.stdout }}"
+#
+#- name: Include tasks to rename old naming convention on network interfaces
+#  include_tasks: 4067471_predictable-nics_3.yml
+#  when: nic_inhibitor_presence
     
 #- name: Remove problematic modules
 #  command: rmmod pata_acpi
+
 #
-#- name: Call preupgrade playbook
-#  include_tasks: preupgrade.yml 
+# After trying to remediate these inhibitors, The preupgrade task gets called again.
+- name: Call preupgrade playbook
+  include_tasks: preupgrade.yml
+
+
